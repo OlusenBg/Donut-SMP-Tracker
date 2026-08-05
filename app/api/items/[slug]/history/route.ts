@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
+import { tickPrices } from "@/lib/priceEngine";
 import { getItem } from "@/lib/items-data";
 
 export const dynamic = "force-dynamic";
@@ -21,22 +22,29 @@ export async function GET(
     return NextResponse.json({ error: "Item not found" }, { status: 404 });
   }
 
+  await tickPrices([item.slug]);
+
   const range = request.nextUrl.searchParams.get("range") ?? "hour";
   const windowMs = RANGE_MS[range] ?? RANGE_MS.hour;
   const since = Date.now() - windowMs;
 
-  const rows = db
-    .prepare(
-      "SELECT price, ts FROM price_history WHERE slug = ? AND ts >= ? ORDER BY ts ASC",
-    )
-    .all(item.slug, since) as { price: number; ts: number }[];
-
-  const step = Math.max(1, Math.floor(rows.length / MAX_POINTS));
-  const sampled = rows.filter((_, i) => i % step === 0);
-
-  return NextResponse.json({
-    slug: item.slug,
-    range,
-    points: sampled.map((r) => ({ ts: r.ts, price: r.price })),
+  // Downsampling happens inside get_price_history (SQL), not here — a
+  // week of raw 5-minute-resolution rows (~2000) could otherwise be
+  // silently truncated by PostgREST's default 1000-row response cap.
+  const { data, error } = await supabase.rpc("get_price_history", {
+    p_slug: item.slug,
+    p_since: since,
+    p_max_points: MAX_POINTS,
   });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  const points = (data as { price: number; ts: number }[]).map((r) => ({
+    ts: r.ts,
+    price: r.price,
+  }));
+
+  return NextResponse.json({ slug: item.slug, range, points });
 }

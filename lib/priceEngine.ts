@@ -1,44 +1,28 @@
-import { db, stepPrice } from "./db";
+import { supabase } from "./supabase";
 import { catalog } from "./items-data";
 
-const TICK_MS = 5000;
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __donutEngineStarted: boolean | undefined;
-}
-
-function tick() {
-  const insertHistory = db.prepare(
-    "INSERT INTO price_history (slug, price, ts) VALUES (?, ?, ?)",
-  );
-  const upsertCurrent = db.prepare(
-    "INSERT INTO current_prices (slug, price, ts) VALUES (?, ?, ?) " +
-      "ON CONFLICT(slug) DO UPDATE SET price = excluded.price, ts = excluded.ts",
-  );
-  const getCurrent = db.prepare(
-    "SELECT price FROM current_prices WHERE slug = ?",
-  );
-
-  const runTick = db.transaction(() => {
-    const now = Date.now();
-    for (const item of catalog) {
-      const row = getCurrent.get(item.slug) as { price: number } | undefined;
-      const current = row?.price ?? item.basePrice;
-      const next = stepPrice(current, item.basePrice, item.volatility);
-      insertHistory.run(item.slug, next, now);
-      upsertCurrent.run(item.slug, next, now);
-    }
+/**
+ * Advances every given item's price by one random-walk step if it's been
+ * >=5s since its last tick, and logs the new price to price_history — all
+ * atomically, inside the `tick_prices` Postgres function (see the
+ * add_get_price_history_function / create_price_tracking_schema
+ * migrations). Items ticked more recently than 5s ago are left untouched.
+ *
+ * There's no persistent background process driving this — serverless
+ * hosting (Vercel) doesn't allow one. Instead every read calls this first
+ * ("lazy tick"): real traffic keeps prices moving, and a low-frequency
+ * Vercel Cron hitting /api/cron/tick is the backstop for when nobody's
+ * looking.
+ */
+export async function tickPrices(slugs: string[]): Promise<void> {
+  if (slugs.length === 0) return;
+  const { error } = await supabase.rpc("tick_prices", {
+    p_slugs: slugs,
+    p_now: Date.now(),
   });
-
-  runTick();
+  if (error) throw new Error(`tick_prices failed: ${error.message}`);
 }
 
-/** Idempotent — safe to call from any route module; only the first call
- * actually starts the interval (guarded via globalThis to survive Next.js
- * dev-mode hot reloads). */
-export function ensurePriceEngineStarted() {
-  if (global.__donutEngineStarted) return;
-  global.__donutEngineStarted = true;
-  setInterval(tick, TICK_MS);
+export async function tickAllPrices(): Promise<void> {
+  await tickPrices(catalog.map((item) => item.slug));
 }

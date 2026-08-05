@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { ensurePriceEngineStarted } from "@/lib/priceEngine";
+import { supabase } from "@/lib/supabase";
+import { tickPrices } from "@/lib/priceEngine";
 import { catalog, searchCatalog } from "@/lib/items-data";
 
 export const dynamic = "force-dynamic";
@@ -11,19 +11,23 @@ interface CurrentPriceRow {
   ts: number;
 }
 
-function getCurrentPrices(): Map<string, CurrentPriceRow> {
-  const rows = db
-    .prepare("SELECT slug, price, ts FROM current_prices")
-    .all() as CurrentPriceRow[];
-  return new Map(rows.map((r) => [r.slug, r]));
-}
-
 export async function GET(request: NextRequest) {
-  ensurePriceEngineStarted();
-
   const q = request.nextUrl.searchParams.get("q") ?? "";
   const items = q ? searchCatalog(q, 8) : catalog;
-  const prices = getCurrentPrices();
+  const slugs = items.map((item) => item.slug);
+
+  await tickPrices(slugs);
+
+  const { data, error } = await supabase
+    .from("current_prices")
+    .select("slug, price, ts")
+    .in("slug", slugs);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  const prices = new Map((data as CurrentPriceRow[]).map((r) => [r.slug, r]));
 
   const results = items.map((item) => {
     const current = prices.get(item.slug);

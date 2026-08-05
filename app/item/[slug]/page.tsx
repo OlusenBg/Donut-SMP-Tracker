@@ -2,18 +2,22 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import ItemDetailView from "@/components/ItemDetailView";
 import { getItem } from "@/lib/items-data";
-import { db } from "@/lib/db";
-import { ensurePriceEngineStarted } from "@/lib/priceEngine";
+import { supabase } from "@/lib/supabase";
+import { tickPrices } from "@/lib/priceEngine";
 
-export default function ItemPage({ params }: { params: { slug: string } }) {
-  ensurePriceEngineStarted();
+export const dynamic = "force-dynamic";
 
+export default async function ItemPage({ params }: { params: { slug: string } }) {
   const catalogItem = getItem(params.slug);
   if (!catalogItem) notFound();
 
-  const current = db
-    .prepare("SELECT price, ts FROM current_prices WHERE slug = ?")
-    .get(catalogItem.slug) as { price: number; ts: number } | undefined;
+  await tickPrices([catalogItem.slug]);
+
+  const { data: current } = await supabase
+    .from("current_prices")
+    .select("price, ts")
+    .eq("slug", catalogItem.slug)
+    .maybeSingle<{ price: number; ts: number }>();
 
   const initial = {
     slug: catalogItem.slug,

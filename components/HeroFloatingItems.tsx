@@ -42,8 +42,24 @@ function Row({
   );
 }
 
+// Purely decorative, so it doesn't need to represent the whole (now
+// ~1200-item) catalog — sample a bounded, evenly-spread subset. The
+// marquee animation duration is fixed, so feeding it the entire catalog
+// made the strip ~20x wider without slowing down, i.e. it scrolled ~20x
+// faster than intended.
+const SAMPLE_SIZE = 48;
+
+function sampleEvenly<T>(items: T[], count: number): T[] {
+  if (items.length <= count) return items;
+  const step = items.length / count;
+  return Array.from({ length: count }, (_, i) => items[Math.floor(i * step)]);
+}
+
 export default function HeroFloatingItems() {
-  const slugs = catalog.map((i) => i.slug);
+  const slugs = sampleEvenly(
+    catalog.map((i) => i.slug),
+    SAMPLE_SIZE,
+  );
   const rowA = slugs.filter((_, i) => i % 3 === 0);
   const rowB = slugs.filter((_, i) => i % 3 === 1);
   const rowC = slugs.filter((_, i) => i % 3 === 2);

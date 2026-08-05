@@ -125,7 +125,7 @@ export default function ItemDetailView({ initial }: { initial: ItemDetail }) {
               width={192}
               height={192}
               unoptimized
-              className="pixelated h-2/3 w-2/3 object-contain drop-shadow-[0_10px_30px_rgba(0,229,255,0.35)]"
+              className="pixelated h-2/3 w-2/3 object-contain drop-shadow-[0_10px_30px_rgb(var(--donut-accent)/0.35)]"
             />
           </div>
         </div>

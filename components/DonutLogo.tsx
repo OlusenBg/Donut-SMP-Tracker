@@ -1,5 +1,14 @@
 export default function DonutLogo({ size = 220 }: { size?: number }) {
-  const sprinkleColors = ["#00e5ff", "#a8c6f7", "#ffffff", "#6ea0f2", "#4dd0ff"];
+  // Sprinkles keep a fixed multicolor palette regardless of theme — real
+  // donut sprinkles are colorful, and it reads better against all three
+  // themes than tying every sprinkle to a single accent color would.
+  const sprinkleColors = [
+    "rgb(var(--donut-accent))",
+    "rgb(var(--donut-200))",
+    "#ffffff",
+    "rgb(var(--donut-300))",
+    "rgb(var(--donut-glow))",
+  ];
   const sprinkles = Array.from({ length: 22 }).map((_, i) => {
     const angle = (i / 22) * Math.PI * 2 + (i % 2 === 0 ? 0.15 : 0);
     const radius = 62 + ((i * 13) % 22);
@@ -16,20 +25,20 @@ export default function DonutLogo({ size = 220 }: { size?: number }) {
         viewBox="0 0 200 200"
         width={size}
         height={size}
-        className="drop-shadow-[0_0_40px_rgba(0,229,255,0.45)]"
+        className="drop-shadow-[0_0_40px_rgb(var(--donut-accent)/0.45)]"
       >
         <defs>
           <radialGradient id="donutGlow" cx="50%" cy="50%" r="60%">
-            <stop offset="0%" stopColor="#4dd0ff" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#4dd0ff" stopOpacity="0" />
+            <stop offset="0%" stopColor="rgb(var(--donut-glow))" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="rgb(var(--donut-glow))" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="donutBody" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3b74e0" />
-            <stop offset="100%" stopColor="#0f2a63" />
+            <stop offset="0%" stopColor="rgb(var(--donut-400))" />
+            <stop offset="100%" stopColor="rgb(var(--donut-700))" />
           </linearGradient>
           <linearGradient id="donutIcing" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#00e5ff" />
-            <stop offset="100%" stopColor="#1e4fb8" />
+            <stop offset="0%" stopColor="rgb(var(--donut-accent))" />
+            <stop offset="100%" stopColor="rgb(var(--donut-500))" />
           </linearGradient>
         </defs>
 
@@ -37,7 +46,7 @@ export default function DonutLogo({ size = 220 }: { size?: number }) {
 
         {/* dough ring */}
         <circle cx="100" cy="100" r="80" fill="url(#donutBody)" />
-        <circle cx="100" cy="100" r="34" fill="#030a1c" />
+        <circle cx="100" cy="100" r="34" fill="rgb(var(--donut-950))" />
 
         {/* icing drip ring */}
         <path
@@ -46,7 +55,7 @@ export default function DonutLogo({ size = 220 }: { size?: number }) {
           fill="url(#donutIcing)"
           opacity="0.92"
         />
-        <circle cx="100" cy="100" r="38" fill="#030a1c" />
+        <circle cx="100" cy="100" r="38" fill="rgb(var(--donut-950))" />
 
         {/* icing drips */}
         {[18, 70, 130, 200, 250, 300].map((deg, i) => {
@@ -60,7 +69,7 @@ export default function DonutLogo({ size = 220 }: { size?: number }) {
               cy={y + 8}
               rx={5}
               ry={10}
-              fill="#00e5ff"
+              fill="rgb(var(--donut-accent))"
               opacity={0.85}
             />
           );

@@ -108,15 +108,15 @@ export default function PriceChart({ slug }: { slug: string }) {
             <AreaChart data={points} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="priceFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#00e5ff" stopOpacity={0.45} />
-                  <stop offset="100%" stopColor="#00e5ff" stopOpacity={0} />
+                  <stop offset="0%" stopColor="rgb(var(--donut-accent))" stopOpacity={0.45} />
+                  <stop offset="100%" stopColor="rgb(var(--donut-accent))" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke="rgba(77,208,255,0.08)" vertical={false} />
+              <CartesianGrid stroke="rgb(var(--donut-glow) / 0.08)" vertical={false} />
               <XAxis
                 dataKey="ts"
                 tickFormatter={(ts) => formatTime(ts, range)}
-                stroke="rgba(168,198,247,0.4)"
+                stroke="rgb(var(--donut-200) / 0.4)"
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
@@ -125,7 +125,7 @@ export default function PriceChart({ slug }: { slug: string }) {
               <YAxis
                 domain={[min - pad, max + pad]}
                 tickFormatter={(v) => formatPrice(v)}
-                stroke="rgba(168,198,247,0.4)"
+                stroke="rgb(var(--donut-200) / 0.4)"
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
@@ -135,7 +135,7 @@ export default function PriceChart({ slug }: { slug: string }) {
               <Area
                 type="monotone"
                 dataKey="price"
-                stroke="#00e5ff"
+                stroke="rgb(var(--donut-accent))"
                 strokeWidth={2}
                 fill="url(#priceFill)"
                 animationDuration={300}

@@ -8,20 +8,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Each shade reads from a CSS variable (defined per-theme in
+        // globals.css) so switching themes recolors every existing
+        // bg-donut-*/text-donut-*/border-donut-* usage across the app
+        // without touching component code. The rgb(var(...) / <alpha-value>)
+        // form is Tailwind's documented pattern for keeping opacity
+        // modifiers (e.g. bg-donut-500/20) working with CSS-variable colors.
         donut: {
-          950: "#020617",
-          900: "#04102b",
-          850: "#061638",
-          800: "#0a1e4a",
-          700: "#0f2a63",
-          600: "#15398a",
-          500: "#1e4fb8",
-          400: "#3b74e0",
-          300: "#6ea0f2",
-          200: "#a8c6f7",
-          100: "#dbe8fd",
-          glow: "#4dd0ff",
-          accent: "#00e5ff",
+          950: "rgb(var(--donut-950) / <alpha-value>)",
+          900: "rgb(var(--donut-900) / <alpha-value>)",
+          850: "rgb(var(--donut-850) / <alpha-value>)",
+          800: "rgb(var(--donut-800) / <alpha-value>)",
+          700: "rgb(var(--donut-700) / <alpha-value>)",
+          600: "rgb(var(--donut-600) / <alpha-value>)",
+          500: "rgb(var(--donut-500) / <alpha-value>)",
+          400: "rgb(var(--donut-400) / <alpha-value>)",
+          300: "rgb(var(--donut-300) / <alpha-value>)",
+          200: "rgb(var(--donut-200) / <alpha-value>)",
+          100: "rgb(var(--donut-100) / <alpha-value>)",
+          glow: "rgb(var(--donut-glow) / <alpha-value>)",
+          accent: "rgb(var(--donut-accent) / <alpha-value>)",
         },
       },
       fontFamily: {
@@ -29,8 +35,8 @@ const config: Config = {
         mono: ["var(--font-mono)", "monospace"],
       },
       boxShadow: {
-        glow: "0 0 25px rgba(77, 208, 255, 0.35)",
-        "glow-lg": "0 0 60px rgba(77, 208, 255, 0.25)",
+        glow: "0 0 25px rgb(var(--donut-glow) / 0.35)",
+        "glow-lg": "0 0 60px rgb(var(--donut-glow) / 0.25)",
       },
       keyframes: {
         "marquee-left": {

@@ -2,13 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme palettes, as "R G B" triplets so Tailwind's rgb(var(--x) / <alpha>)
+ * pattern can apply opacity modifiers (bg-donut-500/20 etc). "Donut" (the
+ * original blue) is the default in :root; other themes override via
+ * [data-theme], set on <html> by lib/preferences.ts. */
+:root {
+  --donut-950: 2 6 23;
+  --donut-900: 4 16 43;
+  --donut-850: 6 22 56;
+  --donut-800: 10 30 74;
+  --donut-700: 15 42 99;
+  --donut-600: 21 57 138;
+  --donut-500: 30 79 184;
+  --donut-400: 59 116 224;
+  --donut-300: 110 160 242;
+  --donut-200: 168 198 247;
+  --donut-100: 219 232 253;
+  --donut-glow: 77 208 255;
+  --donut-accent: 0 229 255;
+}
+
+:root[data-theme="dark"] {
+  --donut-950: 9 9 11;
+  --donut-900: 17 17 19;
+  --donut-850: 24 24 27;
+  --donut-800: 39 39 42;
+  --donut-700: 63 63 70;
+  --donut-600: 82 82 91;
+  --donut-500: 113 113 122;
+  --donut-400: 161 161 170;
+  --donut-300: 212 212 216;
+  --donut-200: 228 228 231;
+  --donut-100: 244 244 245;
+  --donut-glow: 228 228 231;
+  --donut-accent: 244 244 245;
+}
+
+:root[data-theme="sprinkles"] {
+  --donut-950: 26 5 18;
+  --donut-900: 43 10 31;
+  --donut-850: 61 15 44;
+  --donut-800: 89 22 64;
+  --donut-700: 122 31 87;
+  --donut-600: 161 40 118;
+  --donut-500: 214 51 132;
+  --donut-400: 236 95 163;
+  --donut-300: 244 146 192;
+  --donut-200: 249 193 218;
+  --donut-100: 253 230 240;
+  --donut-glow: 255 143 196;
+  --donut-accent: 255 79 163;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #030a1c;
-  color: #e8f1ff;
+  background-color: rgb(var(--donut-950));
+  color: rgb(var(--donut-100));
 }
 
 ::-webkit-scrollbar {
@@ -16,14 +68,14 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #04102b;
+  background: rgb(var(--donut-900));
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e4fb8;
+  background: rgb(var(--donut-500));
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b74e0;
+  background: rgb(var(--donut-400));
 }
 
 .pixelated {
@@ -32,13 +84,13 @@ body {
 
 .bg-grid {
   background-image:
-    linear-gradient(rgba(77, 208, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(77, 208, 255, 0.06) 1px, transparent 1px);
+    linear-gradient(rgb(var(--donut-glow) / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--donut-glow) / 0.06) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 .text-glow {
-  text-shadow: 0 0 20px rgba(77, 208, 255, 0.55), 0 0 60px rgba(0, 229, 255, 0.25);
+  text-shadow: 0 0 20px rgb(var(--donut-glow) / 0.55), 0 0 60px rgb(var(--donut-accent) / 0.25);
 }
 
 @media (prefers-reduced-motion: reduce) {

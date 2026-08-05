@@ -8,6 +8,9 @@ import { getItem } from "@/lib/items-data";
 import RarityBadge from "./RarityBadge";
 import RankBadge from "./RankBadge";
 import WatchlistStar from "./WatchlistStar";
+import ItemListRow from "./ItemListRow";
+import { useLayoutPreference } from "@/lib/useLayoutPreference";
+import { useHourlyProfiles } from "@/lib/useHourlyProfiles";
 
 interface MoverItem {
   slug: string;
@@ -27,6 +30,8 @@ export default function MarketMovers() {
   const [direction, setDirection] = useState<Direction>("gains");
   const [items, setItems] = useState<MoverItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const layout = useLayoutPreference();
+  const profiles = useHourlyProfiles(layout === "list" ? items.map((i) => i.slug) : []);
 
   useEffect(() => {
     let cancelled = false;
@@ -91,6 +96,12 @@ export default function MarketMovers() {
               key={i}
               className="h-36 animate-pulse rounded-2xl border border-donut-500/10 bg-donut-900/40"
             />
+          ))}
+        </div>
+      ) : layout === "list" ? (
+        <div className="flex flex-col gap-3">
+          {items.map((item) => (
+            <ItemListRow key={item.slug} item={item} hourlyProfile={profiles[item.slug]} />
           ))}
         </div>
       ) : (

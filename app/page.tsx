@@ -11,7 +11,7 @@ export default function Home() {
       <Navbar />
 
       <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden px-6 text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(30,79,184,0.25),transparent_65%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(var(--donut-500)/0.25),transparent_65%)]" />
         <HeroFloatingItems />
 
         <div className="relative z-10 flex flex-col items-center gap-6">

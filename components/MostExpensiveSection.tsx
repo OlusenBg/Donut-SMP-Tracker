@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ItemCard, { ItemSummary } from "./ItemCard";
+import ItemListRow from "./ItemListRow";
+import { useLayoutPreference } from "@/lib/useLayoutPreference";
+import { useHourlyProfiles } from "@/lib/useHourlyProfiles";
 
 const REFRESH_MS = 5000;
 const SHOW_COUNT = 12;
@@ -10,6 +13,8 @@ const SHOW_COUNT = 12;
 export default function MostExpensiveSection() {
   const [items, setItems] = useState<ItemSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const layout = useLayoutPreference();
+  const profiles = useHourlyProfiles(layout === "list" ? items.map((i) => i.slug) : []);
 
   useEffect(() => {
     let cancelled = false;
@@ -59,6 +64,12 @@ export default function MostExpensiveSection() {
               key={i}
               className="h-40 animate-pulse rounded-2xl border border-donut-500/10 bg-donut-900/40"
             />
+          ))}
+        </div>
+      ) : layout === "list" ? (
+        <div className="flex flex-col gap-3">
+          {items.map((item) => (
+            <ItemListRow key={item.slug} item={item} hourlyProfile={profiles[item.slug]} />
           ))}
         </div>
       ) : (

@@ -42,6 +42,30 @@ export function formatPrice(value: number, unit: PriceUnit = "auto"): string {
   return `$${trimZeros(scaled.toFixed(decimals))}${unit.toUpperCase()}`;
 }
 
+export function formatPctChange(pct: number): string {
+  const sign = pct > 0 ? "+" : "";
+  return `${sign}${pct.toFixed(1)}%`;
+}
+
+export function formatHour(hour: number): string {
+  const h = ((hour % 24) + 24) % 24;
+  const period = h < 12 ? "AM" : "PM";
+  const display = h % 12 === 0 ? 12 : h % 12;
+  return `${display}${period}`;
+}
+
+export function formatTimeAgo(ts: number): string {
+  const seconds = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+  if (seconds < 5) return "just now";
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 export function formatTime(ts: number, range: "hour" | "day" | "week"): string {
   const d = new Date(ts);
   if (range === "week") {

@@ -62,6 +62,19 @@ after a period of zero visitors; a site with any real traffic ticks itself.)
 - **Item detail pages** with a big item icon, a price display that toggles
   between Auto / Full / K / M / B / T formatting, and a stock-chart-style
   price history graph with Past Hour / Today / This Week ranges
+- **24h change / 7d high-low stat tiles**, plus a "Best Time to Trade"
+  gradient bar showing which hour of *your* local day an item has
+  historically been cheapest/priciest, with a Buying/Selling toggle that
+  flips which end is good news
+- **Recent Sales feed** on each item page — a live list of (fake) recent
+  listings pulled straight from that item's price ticks
+- **Rarity badges** (Common → Legendary) on every item card, bucketed by
+  base price
+- **Similar items** row at the bottom of each item page, scrollable, same
+  category
+- **Market Movers** section on the homepage — biggest 24h gainers/drops
+- **Watchlist** star on every item card, saved to `localStorage` for now
+  (becomes a real per-account watchlist once accounts exist)
 - 55 real Minecraft item/block textures vendored under `public/items/`
 
 ## Tech stack

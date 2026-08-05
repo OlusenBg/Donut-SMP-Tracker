@@ -4,6 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { formatPrice } from "@/lib/format";
+import { getItem } from "@/lib/items-data";
+import RarityBadge from "./RarityBadge";
+import WatchlistStar from "./WatchlistStar";
 
 export interface ItemSummary {
   slug: string;
@@ -24,6 +27,7 @@ export default function ItemCard({
 }) {
   const [flash, setFlash] = useState(false);
   const [prevPrice, setPrevPrice] = useState(item.price);
+  const basePrice = getItem(item.slug)?.basePrice ?? item.price;
 
   useEffect(() => {
     if (item.price !== prevPrice) {
@@ -42,9 +46,11 @@ export default function ItemCard({
       }`}
     >
       {rank !== undefined && rank < 3 && (
-        <span className="absolute -top-3 -left-2 text-2xl">{RANK_MEDALS[rank]}</span>
+        <span className="absolute -top-3 -left-2 z-20 text-2xl">{RANK_MEDALS[rank]}</span>
       )}
-      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-xl bg-donut-800/60 p-3 group-hover:scale-105 transition-transform">
+      <RarityBadge basePrice={basePrice} />
+      <WatchlistStar slug={item.slug} />
+      <div className="mx-auto mt-3 flex h-20 w-20 items-center justify-center rounded-xl bg-donut-800/60 p-3 group-hover:scale-105 transition-transform">
         <Image
           src={item.image}
           alt={item.name}
@@ -63,7 +69,6 @@ export default function ItemCard({
           {formatPrice(item.price)}
         </div>
       </div>
-      <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-emerald-400 animate-pulse-glow" />
     </Link>
   );
 }

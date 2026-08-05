@@ -3,6 +3,7 @@ import HeroFloatingItems from "@/components/HeroFloatingItems";
 import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import MostExpensiveSection from "@/components/MostExpensiveSection";
+import MarketMovers from "@/components/MarketMovers";
 
 export default function Home() {
   return (
@@ -39,6 +40,7 @@ export default function Home() {
       </section>
 
       <MostExpensiveSection />
+      <MarketMovers />
 
       <footer className="border-t border-donut-500/10 px-6 py-10 text-center text-xs text-donut-300/40">
         Donut SMP Tracker is an unofficial fan project. Prices shown are simulated demo

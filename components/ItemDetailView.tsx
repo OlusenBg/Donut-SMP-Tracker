@@ -3,7 +3,13 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { formatPrice, PriceUnit } from "@/lib/format";
+import { getItem } from "@/lib/items-data";
 import PriceChart from "./PriceChart";
+import ItemInsights from "./ItemInsights";
+import RecentSales from "./RecentSales";
+import SimilarItems from "./SimilarItems";
+import RarityBadge from "./RarityBadge";
+import WatchlistStar from "./WatchlistStar";
 
 export interface ItemDetail {
   slug: string;
@@ -28,6 +34,7 @@ export default function ItemDetailView({ initial }: { initial: ItemDetail }) {
   const [unit, setUnit] = useState<PriceUnit>("auto");
   const [direction, setDirection] = useState<"up" | "down" | "flat">("flat");
   const prevPrice = useRef(initial.price);
+  const basePrice = getItem(initial.slug)?.basePrice ?? initial.price;
 
   useEffect(() => {
     let cancelled = false;
@@ -107,6 +114,8 @@ export default function ItemDetailView({ initial }: { initial: ItemDetail }) {
         {/* Big image — right */}
         <div className="order-1 md:order-2 flex items-center justify-center">
           <div className="relative flex h-56 w-56 items-center justify-center rounded-3xl border border-donut-500/20 bg-donut-900/50 shadow-glow-lg sm:h-72 sm:w-72">
+            <RarityBadge basePrice={basePrice} size="md" />
+            <WatchlistStar slug={item.slug} size="md" />
             <Image
               src={item.image}
               alt={item.name}
@@ -119,8 +128,20 @@ export default function ItemDetailView({ initial }: { initial: ItemDetail }) {
         </div>
       </div>
 
-      <div className="mt-12">
+      <div className="mt-10">
+        <ItemInsights slug={item.slug} />
+      </div>
+
+      <div className="mt-8">
         <PriceChart slug={item.slug} />
+      </div>
+
+      <div className="mt-8">
+        <RecentSales slug={item.slug} />
+      </div>
+
+      <div className="mt-10">
+        <SimilarItems category={item.category} excludeSlug={item.slug} />
       </div>
     </div>
   );

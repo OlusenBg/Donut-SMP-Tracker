@@ -19,6 +19,7 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const requestIdRef = useRef(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -28,10 +29,15 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
       setOpen(false);
       return;
     }
+    const thisRequestId = ++requestIdRef.current;
     const handle = setTimeout(async () => {
       try {
         const res = await fetch(`/api/items?q=${encodeURIComponent(q)}`);
         const data = await res.json();
+        // A newer keystroke may have fired its own request while this one
+        // was in flight; a slow/out-of-order response must not clobber
+        // results for whatever the user has typed since.
+        if (thisRequestId !== requestIdRef.current) return;
         setResults(data.items ?? []);
         setOpen(true);
         setActiveIndex(-1);

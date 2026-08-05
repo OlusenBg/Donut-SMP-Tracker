@@ -15,6 +15,11 @@ declare global {
 
 function createConnection(): Database.Database {
   const database = new Database(DB_PATH);
+  // Next's build step imports every route module (in parallel, across
+  // separate processes) just to inspect its exports, which independently
+  // triggers this file's module-level init. Without a busy timeout, that
+  // stampede fails fast with SQLITE_BUSY instead of waiting its turn.
+  database.pragma("busy_timeout = 5000");
   database.pragma("journal_mode = WAL");
 
   database.exec(`
@@ -69,11 +74,6 @@ const FIVE_MIN_MS = 5 * 60 * 1000;
 const FIVE_SEC_MS = 5 * 1000;
 
 function seedIfEmpty() {
-  const row = db.prepare("SELECT COUNT(*) as count FROM price_history").get() as {
-    count: number;
-  };
-  if (row.count > 0) return;
-
   const insertHistory = db.prepare(
     "INSERT INTO price_history (slug, price, ts) VALUES (?, ?, ?)",
   );
@@ -82,7 +82,19 @@ function seedIfEmpty() {
       "ON CONFLICT(slug) DO UPDATE SET price = excluded.price, ts = excluded.ts",
   );
 
+  // The empty-check and the seed writes must happen as one atomic unit —
+  // otherwise two processes started at the same moment (e.g. Next's build
+  // workers) can both see an empty table and both seed, doubling every
+  // item's history. `.immediate()` grabs the write lock up front so the
+  // second process blocks (courtesy of the busy_timeout above) until the
+  // first has committed, then reruns its own count check and finds rows
+  // already there.
   const seedAll = db.transaction(() => {
+    const row = db.prepare("SELECT COUNT(*) as count FROM price_history").get() as {
+      count: number;
+    };
+    if (row.count > 0) return;
+
     const now = Date.now();
     for (const item of catalog) {
       const start = now - WEEK_MS;
@@ -107,7 +119,7 @@ function seedIfEmpty() {
     }
   });
 
-  seedAll();
+  seedAll.immediate();
 }
 
 seedIfEmpty();

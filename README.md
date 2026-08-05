@@ -45,8 +45,10 @@ tick, atomically, before the request reads the current price. Real traffic
 keeps prices moving on their own; `/api/cron/tick` + `vercel.json`'s Cron
 config is a backstop that keeps ticking during dead air.
 
-(Vercel's free Hobby tier limits Cron Jobs to once a day — the Pro plan
-allows per-minute. Either way this only affects how fast prices recover
+(`vercel.json` schedules it once a day, since Vercel's free Hobby tier
+rejects any more frequent Cron schedule at deploy time — Pro allows down to
+once a minute if you upgrade and want a tighter backstop. Either way this
+only affects how fast prices recover
 after a period of zero visitors; a site with any real traffic ticks itself.)
 
 ## Features

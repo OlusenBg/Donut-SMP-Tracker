@@ -13,11 +13,16 @@ export default async function ItemPage({ params }: { params: { slug: string } })
 
   await tickPrices([catalogItem.slug]);
 
-  const { data: current } = await supabase
-    .from("current_prices")
-    .select("price, ts")
-    .eq("slug", catalogItem.slug)
-    .maybeSingle<{ price: number; ts: number }>();
+  const [{ data: current }, { data: rankData }] = await Promise.all([
+    supabase
+      .from("current_prices")
+      .select("price, ts")
+      .eq("slug", catalogItem.slug)
+      .maybeSingle<{ price: number; ts: number }>(),
+    supabase.rpc("get_ranked_prices", { p_slugs: [catalogItem.slug] }),
+  ]);
+
+  const rank = (rankData as { slug: string; price: number; rank: number }[] | null)?.[0]?.rank;
 
   const initial = {
     slug: catalogItem.slug,
@@ -26,6 +31,7 @@ export default async function ItemPage({ params }: { params: { slug: string } })
     image: `/items/${catalogItem.slug}.png`,
     price: current?.price ?? catalogItem.basePrice,
     updatedAt: current?.ts ?? Date.now(),
+    rank,
   };
 
   return (

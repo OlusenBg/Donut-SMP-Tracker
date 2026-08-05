@@ -7,6 +7,16 @@ export type Category =
   | "Armor"
   | "Blocks"
   | "Food"
+  | "Potions"
+  | "Ores"
+  | "Wood"
+  | "Redstone"
+  | "Nether"
+  | "End"
+  | "Ocean"
+  | "Farming"
+  | "Mob Drops"
+  | "Decoration"
   | "Misc";
 
 export interface CatalogItem {

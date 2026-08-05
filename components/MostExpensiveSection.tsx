@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import ItemCard, { ItemSummary } from "./ItemCard";
 
@@ -15,10 +16,10 @@ export default function MostExpensiveSection() {
 
     async function load() {
       try {
-        const res = await fetch("/api/items");
+        const res = await fetch(`/api/items?full=1&limit=${SHOW_COUNT}`);
         const data = await res.json();
         if (!cancelled) {
-          setItems((data.items ?? []).slice(0, SHOW_COUNT));
+          setItems(data.items ?? []);
           setLoading(false);
         }
       } catch {
@@ -67,6 +68,15 @@ export default function MostExpensiveSection() {
           ))}
         </div>
       )}
+
+      <div className="mt-8 flex justify-center">
+        <Link
+          href="/most_expensive"
+          className="rounded-full border border-donut-500/30 bg-donut-900/60 px-6 py-2.5 text-sm font-medium text-donut-200 transition-colors hover:border-donut-accent/60 hover:text-donut-accent"
+        >
+          See more →
+        </Link>
+      </div>
     </section>
   );
 }

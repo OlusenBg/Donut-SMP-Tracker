@@ -16,15 +16,23 @@ export async function GET(
 
   await tickPrices([item.slug]);
 
-  const { data: current, error } = await supabase
-    .from("current_prices")
-    .select("price, ts")
-    .eq("slug", item.slug)
-    .maybeSingle<{ price: number; ts: number }>();
+  const [{ data: current, error }, { data: rankData, error: rankError }] = await Promise.all([
+    supabase
+      .from("current_prices")
+      .select("price, ts")
+      .eq("slug", item.slug)
+      .maybeSingle<{ price: number; ts: number }>(),
+    supabase.rpc("get_ranked_prices", { p_slugs: [item.slug] }),
+  ]);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  if (rankError) {
+    return NextResponse.json({ error: rankError.message }, { status: 500 });
+  }
+
+  const rank = (rankData as { slug: string; price: number; rank: number }[] | null)?.[0]?.rank;
 
   return NextResponse.json({
     slug: item.slug,
@@ -33,5 +41,6 @@ export async function GET(
     image: `/items/${item.slug}.png`,
     price: current?.price ?? item.basePrice,
     updatedAt: current?.ts ?? Date.now(),
+    rank,
   });
 }

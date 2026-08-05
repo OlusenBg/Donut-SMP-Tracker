@@ -10,6 +10,7 @@ import RecentSales from "./RecentSales";
 import SimilarItems from "./SimilarItems";
 import RarityBadge from "./RarityBadge";
 import WatchlistStar from "./WatchlistStar";
+import RankBadge from "./RankBadge";
 
 export interface ItemDetail {
   slug: string;
@@ -18,6 +19,7 @@ export interface ItemDetail {
   image: string;
   price: number;
   updatedAt: number;
+  rank?: number;
 }
 
 const UNITS: { key: PriceUnit; label: string }[] = [
@@ -115,7 +117,8 @@ export default function ItemDetailView({ initial }: { initial: ItemDetail }) {
         <div className="order-1 md:order-2 flex items-center justify-center">
           <div className="relative flex h-56 w-56 items-center justify-center rounded-3xl border border-donut-500/20 bg-donut-900/50 shadow-glow-lg sm:h-72 sm:w-72">
             <RarityBadge basePrice={basePrice} size="md" />
-            <WatchlistStar slug={item.slug} size="md" />
+            {item.rank !== undefined && <RankBadge rank={item.rank} size="md" />}
+            <WatchlistStar slug={item.slug} size="md" stacked={item.rank !== undefined} />
             <Image
               src={item.image}
               alt={item.name}

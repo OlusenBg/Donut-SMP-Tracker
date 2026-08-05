@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/format";
 import { getItem } from "@/lib/items-data";
 import RarityBadge from "./RarityBadge";
 import WatchlistStar from "./WatchlistStar";
+import RankBadge from "./RankBadge";
 
 export interface ItemSummary {
   slug: string;
@@ -14,6 +15,7 @@ export interface ItemSummary {
   category: string;
   image: string;
   price: number;
+  rank?: number;
 }
 
 const RANK_MEDALS = ["🥇", "🥈", "🥉"];
@@ -49,7 +51,8 @@ export default function ItemCard({
         <span className="absolute -top-3 -left-2 z-20 text-2xl">{RANK_MEDALS[rank]}</span>
       )}
       <RarityBadge basePrice={basePrice} />
-      <WatchlistStar slug={item.slug} />
+      {item.rank !== undefined && <RankBadge rank={item.rank} />}
+      <WatchlistStar slug={item.slug} stacked={item.rank !== undefined} />
       <div className="mx-auto mt-3 flex h-20 w-20 items-center justify-center rounded-xl bg-donut-800/60 p-3 group-hover:scale-105 transition-transform">
         <Image
           src={item.image}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import AmbientBackground from "@/components/AmbientBackground";
 import "./globals.css";
 
 const display = Space_Grotesk({
@@ -28,6 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${display.variable} ${mono.variable}`}>
       <body className="font-display bg-donut-950 bg-grid min-h-screen antialiased">
+        <AmbientBackground />
         {children}
       </body>
     </html>

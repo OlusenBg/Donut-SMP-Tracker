@@ -6,9 +6,13 @@ import { isWatched, subscribeWatchlist, toggleWatched } from "@/lib/watchlist";
 export default function WatchlistStar({
   slug,
   size = "sm",
+  stacked = false,
 }: {
   slug: string;
   size?: "sm" | "md";
+  /** Set when a RankBadge already occupies the top-right corner, so this
+   * renders just below it instead of overlapping. */
+  stacked?: boolean;
 }) {
   const [watched, setWatched] = useState(false);
 
@@ -19,6 +23,7 @@ export default function WatchlistStar({
 
   const dimension = size === "md" ? "h-9 w-9" : "h-7 w-7";
   const iconSize = size === "md" ? "h-5 w-5" : "h-4 w-4";
+  const topOffset = stacked ? (size === "md" ? "top-11" : "top-9") : "top-2";
 
   return (
     <button
@@ -30,7 +35,7 @@ export default function WatchlistStar({
         e.stopPropagation();
         setWatched(toggleWatched(slug));
       }}
-      className={`absolute right-2 top-2 z-10 flex ${dimension} items-center justify-center rounded-full border backdrop-blur-sm transition-colors ${
+      className={`absolute right-2 ${topOffset} z-10 flex ${dimension} items-center justify-center rounded-full border backdrop-blur-sm transition-colors ${
         watched
           ? "border-amber-400/50 bg-amber-500/20 text-amber-300"
           : "border-donut-500/20 bg-donut-950/50 text-donut-300/60 hover:text-amber-300"
